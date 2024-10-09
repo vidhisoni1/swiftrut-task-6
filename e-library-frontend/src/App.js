@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import BookList from './components/BookList';
-import BookDetail from './components/BookDetail';
-import AddBookForm from './components/AddBookForm';
-import EditBookForm from './components/EditBookForm';
-import Register from './components/Register';
-import Login from './components/Login';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import { AuthProvider } from "./context/AuthContext";
+import AddBook from "./pages/AddBook";
+import MyBooks from "./pages/MyBooks";
+import MyBorrowedBooks from "./pages/MyBorrowedBooks";
+import EditBook from "./pages/EditBook";
+import BookDetails from "./pages/BookDetails"; // Import the BookDetails component
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const App = () => {
-  const [token, setToken] = useState(null); // JWT token stored in state
 
+function App() {
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<BookList />} />
-          <Route path="/books/:id" element={<BookDetail />} />
-          <Route path="/add-book" element={<AddBookForm />} />
-          <Route path="/edit-book/:id" element={<EditBookForm />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login setToken={setToken} />} />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Header />
+        <div className="">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/books/:id" element={<BookDetails />} />{" "}
+            {/* Book details route */}
+            {/* Public routes for Login and Register */}
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
+            {/* Protected routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/add-book" element={<AddBook />} />
+              <Route path="/my-books" element={<MyBooks />} />
+              <Route path="/my-borrowed-books" element={<MyBorrowedBooks />} />
+              <Route path="/edit-book/:id" element={<EditBook />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
-};
+}
 
 export default App;
